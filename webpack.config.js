@@ -1,13 +1,7 @@
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     devtool: 'inline-source-map',
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'brackets-viewer.min.css',
-        }),
-    ],
     resolve: {
         extensions: ['.ts', '.js'],
     },
@@ -25,7 +19,7 @@ module.exports = {
             {
                 test: /\.scss$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    'style-loader',
                     'css-loader',
                     'sass-loader',
                 ],

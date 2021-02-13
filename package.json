@@ -5,6 +5,7 @@
     "files": [
         "dist/"
     ],
+    "main": "dist/brackets-viewer.min.js",
     "scripts": {
         "db": "npx json-server --watch demo/db.json",
         "build": "npx webpack --mode production",
@@ -42,6 +43,7 @@
         "mini-css-extract-plugin": "^1.3.6",
         "sass": "^1.32.7",
         "sass-loader": "^11.0.1",
+        "style-loader": "^2.0.0",
         "ts-loader": "^8.0.17",
         "typescript": "^4.1.5",
         "webpack": "^5.21.2",
