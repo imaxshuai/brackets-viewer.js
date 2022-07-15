@@ -1,5 +1,5 @@
 import './style.scss';
-import { Participant, Match, ParticipantResult, Stage, Status } from 'brackets-model';
+import { Participant, Match, ParticipantResult, Stage, Status, Round } from 'brackets-model';
 import { splitBy, getRanking, getOriginAbbreviation, findRoot, completeWithBlankMatches } from './helpers';
 import * as dom from './dom';
 import * as lang from './lang';
@@ -17,6 +17,7 @@ import {
     ParticipantImage,
     Side,
     MatchClickCallback,
+    RoundClickCallback,
 } from './types';
 
 export class BracketsViewer {
@@ -24,6 +25,7 @@ export class BracketsViewer {
     readonly participantRefs: Record<number, HTMLElement[]> = {};
 
     private participants: Participant[] = [];
+    private rounds: Round[] = [];
     private participantImages: ParticipantImage[] = [];
 
     private stage!: Stage;
@@ -34,12 +36,23 @@ export class BracketsViewer {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private _onMatchClick: MatchClickCallback = (match: Match): void => { };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private _onRoundClick: RoundClickCallback = (round: Round): void => { };
+
     /**
      * @deprecated
      * @param callback A callback to be called when a match is clicked.
      */
     public set onMatchClicked(callback: MatchClickCallback) {
         this._onMatchClick = callback;
+    }
+
+    /**
+     * @deprecated
+     * @param callback A callback to be called when a match is clicked.
+     */
+    public set onRoundClicked(callback: RoundClickCallback) {
+        this._onRoundClick = callback;
     }
 
     /**
@@ -64,7 +77,11 @@ export class BracketsViewer {
         if (this.config.onMatchClick)
             this._onMatchClick = this.config.onMatchClick;
 
+        if (this.config.onRoundClick)
+            this._onRoundClick = this.config.onRoundClick;
+
         this.participants = data.participants;
+        this.rounds = data.rounds;
 
         data.participants.forEach(participant => this.participantRefs[participant.id] = []);
 
@@ -95,6 +112,29 @@ export class BracketsViewer {
 
         const result2 = matchContainer.querySelector('.participant:nth-of-type(2) .result');
         if (result2 && match.opponent2?.score) result2.innerHTML = match.opponent2?.score?.toString();
+    }
+
+    /**
+     * Updates the results of an existing match.
+     * 
+     * @param match The match to update.
+     */
+    public updateRound(round: Round): void {
+        //  TODO: finish this function (update win/loss/forfeit, scoreboard in round-robin, etc.)
+
+        const roundContainer = document.querySelector(`[data-round-id='${round.id}']`);
+        if (!roundContainer) throw Error('Round not found.');
+
+        const title = roundContainer.querySelector('h3');
+        if (title && round.title) title.innerHTML = round.title;
+
+        // matchContainer.setAttribute('data-match-status', match.status.toString());
+
+        // const result1 = matchContainer.querySelector('.participant:nth-of-type(1) .result');
+        // if (result1 && match.opponent1?.score) result1.innerHTML = match.opponent1?.score?.toString();
+
+        // const result2 = matchContainer.querySelector('.participant:nth-of-type(2) .result');
+        // if (result2 && match.opponent2?.score) result2.innerHTML = match.opponent2?.score?.toString();
     }
 
     /**
@@ -253,7 +293,10 @@ export class BracketsViewer {
         for (let roundIndex = 0; roundIndex < matchesByRound.length; roundIndex++) {
             const roundId = matchesByRound[roundIndex][0].round_id;
             const roundNumber = roundIndex + 1;
-            const roundContainer = dom.createRoundContainer(roundId, roundName(roundNumber, roundCount));
+            const round = this.rounds.find(round => round.id === roundId) ??
+                { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: "" };
+            const title = round.title ?? roundName(roundNumber, roundCount);
+            const roundContainer = dom.createRoundContainer(roundId, title, () => this._onRoundClick(round));
 
             const roundMatches = fromToornament && roundNumber === 1 ? completedMatches : matchesByRound[roundIndex];
 
@@ -286,7 +329,11 @@ export class BracketsViewer {
 
         for (let roundIndex = 0; roundIndex < finalMatches.length; roundIndex++) {
             const roundNumber = roundIndex + 1;
-            const roundContainer = dom.createRoundContainer(finalMatches[roundIndex].round_id, lang.getFinalMatchLabel(finalType, roundNumber, roundCount));
+            const roundId = finalMatches[roundIndex].round_id;
+            const round = this.rounds.find(round => round.id === roundId) ??
+                { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: "" };
+            const title = round.title ?? lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
+            const roundContainer = dom.createRoundContainer(finalMatches[roundIndex].round_id, title);
             roundContainer.append(this.createFinalMatch(finalType, finalMatches, roundNumber, roundCount));
             upperBracket.append(roundContainer);
         }

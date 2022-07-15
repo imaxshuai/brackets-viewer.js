@@ -24,27 +24,33 @@
                 .catch(() => alert('Failed to fetch localhost. Please do `npm run db` or use json-server your own way.'))
                 .then(res => res.json());
 
-            // You can manually add locales. English will be used as a fallback if keys are missing.
-            // You can force browser language detection by setting the `i18nextLng` property to a locale key (ex: 'ru') in the localStorage.
-            window.bracketsViewer.addLocale('ru', {
-                "common": {
-                    "round-name": "раунд {{roundNumber}}",
-                }
-            });
-
             // This is optional. You must do it before render().
             window.bracketsViewer.setParticipantImages(data.participant.map(participant => ({
                 participantId: participant.id,
                 imageUrl: 'https://github.githubassets.com/pinned-octocat.svg',
             })));
 
-            window.bracketsViewer.onMatchClicked = match => console.log(match)
+            window.bracketsViewer.onMatchClicked = match => {
+                let d = match;
+                let n = prompt("输入值");
+                if(n) d.opponent1.score = n;
+                window.bracketsViewer.updateMatch(match)
+            }
+
+            window.bracketsViewer.onRoundClicked = round => {
+                console.log(round);
+                let d = round;
+                let n = prompt("输入");
+                if(n) round.title = n;
+                window.bracketsViewer.updateRound(round);
+            }
 
             window.bracketsViewer.render({
                 stages: data.stage,
                 matches: data.match,
-                matchGames: data.match_game,
+                // matchGames: data.match_game,
                 participants: data.participant,
+                rounds: data.round,
             }, {
                 selector: '#example',
                 participantOriginPlacement: 'before',

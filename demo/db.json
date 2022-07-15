@@ -118,49 +118,57 @@
             "id": 0,
             "number": 1,
             "stage_id": 0,
-            "group_id": 0
+            "group_id": 0,
+            "title": "哇哈"
         },
         {
             "id": 1,
             "number": 2,
             "stage_id": 0,
-            "group_id": 0
+            "group_id": 0,
+            "title": "哇哈"
         },
         {
             "id": 2,
             "number": 3,
             "stage_id": 0,
-            "group_id": 0
+            "group_id": 0,
+            "title": "哇哈"
         },
         {
             "id": 3,
             "number": 4,
             "stage_id": 0,
-            "group_id": 0
+            "group_id": 0,
+            "title": "哇哈"
         },
         {
             "id": 4,
             "number": 1,
             "stage_id": 0,
-            "group_id": 1
+            "group_id": 1,
+            "title": "哇哈"
         },
         {
             "id": 5,
             "number": 2,
             "stage_id": 0,
-            "group_id": 1
+            "group_id": 1,
+            "title": "哇哈"
         },
         {
             "id": 6,
             "number": 3,
             "stage_id": 0,
-            "group_id": 1
+            "group_id": 1,
+            "title": "哇哈"
         },
         {
             "id": 7,
             "number": 4,
             "stage_id": 0,
-            "group_id": 1
+            "group_id": 1,
+            "title": "哇哈"
         },
         {
             "id": 8,

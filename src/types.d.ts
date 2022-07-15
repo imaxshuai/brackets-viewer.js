@@ -1,4 +1,4 @@
-import { Stage, Match, MatchGame, Participant } from 'brackets-model';
+import { Stage, Match, MatchGame, Participant, Round } from 'brackets-model';
 import { CallbackFunction, FormConfiguration } from './form';
 import { InMemoryDatabase } from 'brackets-memory-db';
 import { BracketsViewer } from './main';
@@ -22,6 +22,8 @@ export interface ViewerData {
 
     /** The matches of the stage to display. */
     matches: Match[],
+
+    rounds: Round[],
 
     /** The games of the matches to display. */
     matchGames: MatchGame[],
@@ -48,6 +50,11 @@ export interface Config {
      * A callback to be called when a match is clicked.
      */
     onMatchClick?: MatchClickCallback;
+
+    /**
+     * A callback to be called when a match is clicked.
+     */
+    onRoundClick?: RoundClickCallback;
 
     /**
      * An optional selector to select the root element.
@@ -114,6 +121,11 @@ export type RoundName = (roundNumber: number, roundCount: number) => string;
  * A function called when a match is clicked.
  */
 export type MatchClickCallback = (match: Match) => void;
+
+/**
+ * A function called when a match is clicked.
+ */
+export type RoundClickCallback = (match: Round) => void;
 
 /**
  * Contains the information about the connections of a match.

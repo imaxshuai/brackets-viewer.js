@@ -90,9 +90,10 @@ export function createRoundsContainer(): HTMLElement {
  * @param roundId ID of the round.
  * @param title Title of the round.
  */
-export function createRoundContainer(roundId: number, title: string): HTMLElement {
+export function createRoundContainer(roundId: number, title: string, onClick?: () => void): HTMLElement {
     const h3 = document.createElement('h3');
     h3.innerText = title;
+    onClick && h3.addEventListener('click', onClick);
 
     const round = document.createElement('article');
     round.classList.add('round');
