@@ -1,24 +1,27 @@
 .brackets-viewer {
   /* Colors */
-  --primary-background: #101213;
-  --secondary-background: #1c2835;
-  --match-background: #14191f;
+  --primary-background: #1e1e2d;
+  --secondary-background: #2B2B40;
+  --match-background: #191927;
   --font-color: #d9d9d9;
-  --win-color: #50b649;
+  --win-color: #ff7200;
   --loss-color: #e61a1a;
   --label-color: grey;
-  --hint-color: #a7a7a7;
-  --connector-color: #1c2835;
+  --hint-color: #5e5e7d;
+  --connector-color: var(--secondary-background);
   --border-color: var(--primary-background);
   --border-hover-color: #b6b5b5;
 
   /* Sizes */
-  --text-size: 12px;
-  --round-margin: 40px;
-  --match-width: 150px;
-  --match-horizontal-padding: 8px;
-  --match-vertical-padding: 6px;
+  --text-size: 14px;
+  --round-margin: 50px;
+  --match-width: 300px;
+  --match-horizontal-padding: 0px;
+  --match-vertical-padding: 0px;
+  --participant-height: 38px;
+  --participant-vertical-padding: 10px;
   --connector-border-width: 2px;
   --match-border-width: 1px;
-  --match-border-radius: 0.5em;
+  --match-border-radius: 0;
+  --participant-image-size: 22px;
 }

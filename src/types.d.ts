@@ -82,6 +82,11 @@ export interface Config {
     showSlotsOrigin?: boolean,
 
     /**
+     * Whether to show the origin of a slot (wherever possible).
+     */
+    showTitle?: boolean,
+
+    /**
      * Whether to show the origin of a slot (in the lower bracket of an elimination stage).
      */
     showLowerBracketSlotsOrigin?: boolean,

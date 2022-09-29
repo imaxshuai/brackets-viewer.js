@@ -1,7 +1,7 @@
 .brackets-viewer {
   /* Colors */
-  --primary-background: rgb(38, 38, 38);
-  --secondary-background: #303030;
+  --primary-background: #151521;
+  --secondary-background: #2b2b40;
   --match-background: var(--primary-background);
   --font-color: #d9d9d9;
   --win-color: #50b649;
@@ -21,4 +21,5 @@
   --connector-border-width: 2px;
   --match-border-width: 1px;
   --match-border-radius: 0.3em;
+  --participant-image-size: 30px;
 }

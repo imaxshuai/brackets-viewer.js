@@ -16,7 +16,7 @@ export function createTitle(title: string): HTMLElement {
 
 /**
  * Creates a container which contains a round-robin stage.
- * 
+ *
  * @param stageId ID of the stage.
  */
 export function createRoundRobinContainer(stageId: number): HTMLElement {
@@ -28,7 +28,7 @@ export function createRoundRobinContainer(stageId: number): HTMLElement {
 
 /**
  * Creates a container which contains an elimination stage.
- * 
+ *
  * @param stageId ID of the stage.
  */
 export function createEliminationContainer(stageId: number): HTMLElement {
@@ -89,10 +89,20 @@ export function createRoundsContainer(): HTMLElement {
  *
  * @param roundId ID of the round.
  * @param title Title of the round.
+ * @param onClick
+ * @param percent of the round.
  */
-export function createRoundContainer(roundId: number, title: string, onClick?: () => void): HTMLElement {
+export function createRoundContainer(roundId: number, title: string, percent?: string, onClick?: () => void): HTMLElement {
     const h3 = document.createElement('h3');
-    h3.innerText = title;
+    // h3.innerText = title;
+    h3.innerHTML = `
+    <div class="title"> ${title}</div>
+    <div class="triangle_box">
+        <div class="triangle"></div>
+        <div class="triangle r"></div>
+    </div>
+    <div class="progress">${percent ?? '--'}</div>
+    `;
     onClick && h3.addEventListener('click', onClick);
 
     const round = document.createElement('article');
@@ -114,6 +124,39 @@ export function createMatchContainer(matchId?: number, status?: number): HTMLEle
     matchId !== undefined && match.setAttribute('data-match-id', matchId.toString());
     status !== undefined && match.setAttribute('data-match-status', status.toString());
     return match;
+}
+
+/**
+ *
+ */
+export function createMatchStatus(ext: Array<any>): HTMLElement {
+    console.log(ext);
+    const statusBox = document.createElement('div');
+    statusBox.classList.add('d-flex');
+    statusBox.classList.add('status_box');
+    
+    // language=HTML
+    statusBox.innerHTML = `
+        <div class="status d-flex align-items-center"
+            style="background-color: ${ext[0].style?.bgColor ?? '#5121ed'}; color: ${ext[0].style?.color ?? '#fff'};">
+            ${ext[0].dot ? `<div class="dot" style="background-color: ${ext[0].style?.color ?? '#5121ed'};"></div>` : ''}
+            <span>${ext[0].text ?? '--'}</span>
+        </div>
+        <div class="position-relative" style="width: 24px;">
+            <div class="triangle" style="border-color: ${ext[0].style?.bgColor ?? '#1e1e2d'} transparent; border-width: 0 20px 20px 0;"></div>
+            ${ ext[1] ? `<div class="triangle position-absolute"
+                style="border-color: ${ext[1].style?.bgColor ?? '#5121ed'} transparent; border-width: 20px 0 0 20px; right: 0; top: 0;">
+                </div>` : '' }
+        </div>
+        ${ ext[1] ? `<div class="status"
+            style="background-color: ${ext[1].style?.bgColor ?? '#5121ed'}; color: ${ext[1].style?.color ?? '#fff'};">
+            <span>${ext[1].text}</span>
+            <i class="fa-solid fa-caret-right" style="color: ${ext[1].style?.color ?? '#fff'};"></i>
+        </div>` : '' }
+        
+        ${ ext[1] ? `<div class="triangle" style="border-color: ${ext[1].style?.bgColor ?? '#5121ed'} transparent; border-width: 0 20px 20px 0;"></div>` : '' }
+    `;
+    return statusBox;
 }
 
 /**
@@ -156,11 +199,14 @@ export function createOpponentsContainer(onClick?: () => void): HTMLElement {
  * Creates a container which contains a participant.
  *
  * @param participantId ID of the participant.
+ * @param showMark ID of the participant.
  */
-export function createParticipantContainer(participantId: number | null): HTMLElement {
+export function createParticipantContainer(participantId: number | null, showMark?: boolean): HTMLElement {
     const participant = document.createElement('div');
     participant.classList.add('participant');
-
+    if (showMark)
+        participant.innerHTML = '<div class="win_mark"><i class="fas fa-chess-rook"></i></div>';
+    
     if (participantId !== null && participantId !== undefined)
         participant.setAttribute('data-participant-id', participantId.toString());
 
@@ -263,7 +309,12 @@ export function setupBye(nameContainer: HTMLElement): void {
 export function setupWin(participantContainer: HTMLElement, resultContainer: HTMLElement, participant: ParticipantResult): void {
     if (participant.result && participant.result === 'win') {
         participantContainer.classList.add('win');
-
+        const bgLinear = document.createElement('div');
+        bgLinear.classList.add('bg-linear');
+        participantContainer.appendChild(bgLinear);
+        // console.log(participantContainer.getElementsByClassName('win_mark').classList.add('win'));
+        
+        
         if (participant.score === undefined)
             resultContainer.innerText = t('abbreviations.win');
     }
@@ -295,14 +346,14 @@ export function setupLoss(participantContainer: HTMLElement, resultContainer: HT
  * @param placement The placement of the participant origin.
  */
 export function addParticipantOrigin(nameContainer: HTMLElement, text: string, placement: Placement): void {
-    const span = document.createElement('span');
-
+    const div = document.createElement('div');
+    div.classList.add('order-num');
     if (placement === 'before') {
-        span.innerText = `${text} `;
-        nameContainer.prepend(span);
+        div.innerText = `${text} `;
+        nameContainer.prepend(div);
     } else if (placement === 'after') {
-        span.innerText = ` (${text})`;
-        nameContainer.append(span);
+        div.innerText = ` (${text})`;
+        nameContainer.append(div);
     }
 }
 

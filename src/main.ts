@@ -19,6 +19,7 @@ import {
     MatchClickCallback,
     RoundClickCallback,
 } from './types';
+import {createMatchStatus} from './dom';
 
 export class BracketsViewer {
 
@@ -70,6 +71,7 @@ export class BracketsViewer {
             participantOriginPlacement: config?.participantOriginPlacement || 'before',
             separatedChildCountLabel: config?.separatedChildCountLabel !== undefined ? config.separatedChildCountLabel : false,
             showSlotsOrigin: config?.showSlotsOrigin !== undefined ? config.showSlotsOrigin : true,
+            showTitle: config?.showTitle !== undefined ? config.showTitle : true,
             showLowerBracketSlotsOrigin: config?.showLowerBracketSlotsOrigin !== undefined ? config.showLowerBracketSlotsOrigin : true,
             highlightParticipantOnHover: config?.highlightParticipantOnHover !== undefined ? config.highlightParticipantOnHover : true,
         };
@@ -96,7 +98,7 @@ export class BracketsViewer {
 
     /**
      * Updates the results of an existing match.
-     * 
+     *
      * @param match The match to update.
      */
     public updateMatch(match: Match): void {
@@ -116,7 +118,7 @@ export class BracketsViewer {
 
     /**
      * Updates the results of an existing match.
-     * 
+     *
      * @param match The match to update.
      */
     public updateRound(round: Round): void {
@@ -148,7 +150,7 @@ export class BracketsViewer {
 
     /**
      * Adds a locale to the available i18n bundles.
-     * 
+     *
      * @param name Name of the locale.
      * @param locale Contents of the locale.
      */
@@ -191,7 +193,8 @@ export class BracketsViewer {
      */
     private renderRoundRobin(root: DocumentFragment, stage: Stage, matchesByGroup: Match[][]): void {
         const container = dom.createRoundRobinContainer(stage.id);
-        container.append(dom.createTitle(stage.name));
+        if (this.config.showTitle)
+            container.append(dom.createTitle(stage.name));
 
         let groupNumber = 1;
 
@@ -228,7 +231,8 @@ export class BracketsViewer {
      */
     private renderElimination(root: DocumentFragment, stage: Stage, matchesByGroup: Match[][]): void {
         const container = dom.createEliminationContainer(stage.id);
-        container.append(dom.createTitle(stage.name));
+        if (this.config.showTitle)
+            container.append(dom.createTitle(stage.name));
 
         if (stage.type === 'single_elimination')
             this.renderSingleElimination(container, matchesByGroup);
@@ -294,9 +298,9 @@ export class BracketsViewer {
             const roundId = matchesByRound[roundIndex][0].round_id;
             const roundNumber = roundIndex + 1;
             const round = this.rounds.find(round => round.id === roundId) ??
-                { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: "" };
+                { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: '', complete_percent: '--' };
             const title = round.title ?? roundName(roundNumber, roundCount);
-            const roundContainer = dom.createRoundContainer(roundId, title, () => this._onRoundClick(round));
+            const roundContainer = dom.createRoundContainer(roundId, title, round?.complete_percent, () => this._onRoundClick(round));
 
             const roundMatches = fromToornament && roundNumber === 1 ? completedMatches : matchesByRound[roundIndex];
 
@@ -331,7 +335,7 @@ export class BracketsViewer {
             const roundNumber = roundIndex + 1;
             const roundId = finalMatches[roundIndex].round_id;
             const round = this.rounds.find(round => round.id === roundId) ??
-                { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: "" };
+                { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: '' };
             const title = round.title ?? lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
             const roundContainer = dom.createRoundContainer(finalMatches[roundIndex].round_id, title);
             roundContainer.append(this.createFinalMatch(finalType, finalMatches, roundNumber, roundCount));
@@ -462,13 +466,19 @@ export class BracketsViewer {
 
         this.renderMatchLabel(opponents, match, label);
         opponents.append(participant1, participant2);
+        
+        if(match.ext && match.ext.length > 0) {
+            const statusBox = createMatchStatus(match.ext);
+            opponents.appendChild(statusBox);
+        }
+        
         matchContainer.append(opponents);
 
         if (!connection)
             return matchContainer;
 
         dom.setupConnection(opponents, matchContainer, connection);
-
+        this.setupMouseHoverMatch(match, matchContainer);
         return matchContainer;
     }
 
@@ -482,8 +492,10 @@ export class BracketsViewer {
      * @param roundNumber Number of the round.
      */
     private createParticipant(participant: ParticipantResult | null, side?: Side, originHint?: OriginHint, matchLocation?: BracketType, roundNumber?: number): HTMLElement {
+        const p = this.participants.find(p => p.id === participant?.id);
+    
         const containers: ParticipantContainers = {
-            participant: dom.createParticipantContainer(participant && participant.id),
+            participant: dom.createParticipantContainer(participant && participant.id, p?.seeder),
             name: dom.createNameContainer(),
             result: dom.createResultContainer(),
         };
@@ -515,10 +527,11 @@ export class BracketsViewer {
         const found = this.participants.find(item => item.id === participant.id);
 
         if (found) {
-            containers.name.innerText = found.name;
+            containers.name.innerHTML = found.name;
+            
             containers.participant.setAttribute('title', found.name);
-            this.renderParticipantImage(containers.name, found.id);
-            this.renderParticipantOrigin(containers.name, participant, side, matchLocation, roundNumber);
+            if(found.img) dom.addParticipantImage(containers.name, found.img);
+            this.renderParticipantOrigin(containers.participant, participant, side, matchLocation, roundNumber);
         } else
             this.renderHint(containers.name, participant, originHint, matchLocation);
 
@@ -529,19 +542,8 @@ export class BracketsViewer {
     }
 
     /**
-     * Renders a participant image.
-     *
-     * @param nameContainer The name container.
-     * @param participantId ID of the participant.
-     */
-    private renderParticipantImage(nameContainer: HTMLElement, participantId: number): void {
-        const found = this.participantImages.find(item => item.participantId === participantId);
-        if (found) dom.addParticipantImage(nameContainer, found.imageUrl);
-    }
-
-    /**
      * Renders a match label.
-     * 
+     *
      * @param opponents The opponents container.
      * @param match Results of the match.
      * @param label Label of the match.
@@ -592,16 +594,16 @@ export class BracketsViewer {
      * @param roundNumber Number of the round.
      */
     private renderParticipantOrigin(nameContainer: HTMLElement, participant: ParticipantResult, side?: Side, matchLocation?: BracketType, roundNumber?: number): void {
-        if (participant.position === undefined || matchLocation === undefined) return;
+        if (matchLocation === undefined) return;
         if (!this.config.participantOriginPlacement || this.config.participantOriginPlacement === 'none') return;
         if (!this.config.showSlotsOrigin) return;
         if (!this.config.showLowerBracketSlotsOrigin && matchLocation === 'loser-bracket') return;
 
-        const abbreviation = getOriginAbbreviation(matchLocation, this.skipFirstRound, roundNumber, side);
-        if (!abbreviation) return;
+        // const abbreviation = getOriginAbbreviation(matchLocation, this.skipFirstRound, roundNumber, side);
+        // if (!abbreviation) return;
 
-        const origin = abbreviation + participant.position;
-        dom.addParticipantOrigin(nameContainer, origin, this.config.participantOriginPlacement);
+        // const origin = abbreviation + participant.position;
+        dom.addParticipantOrigin(nameContainer, `${participant.position ?? '-'}`, this.config.participantOriginPlacement);
     }
 
     /**
@@ -624,6 +626,25 @@ export class BracketsViewer {
 
         element.addEventListener('mouseleave', () => {
             refs.forEach(el => el.classList.remove('hover'));
+        });
+    }
+
+    /**
+     * Sets mouse hover events for a match.
+     *
+     * @param participantId ID of the participant.
+     * @param element The dom element to add events to.
+     */
+    private setupMouseHoverMatch(match: Match, element: HTMLElement): void {
+        element.addEventListener('mouseover', () => {
+            // refs.forEach(el => el.classList.add('hover'));
+            // console.log("Match mouseover: ");
+        });
+
+        element.addEventListener('mouseleave', () => {
+            // refs.forEach(el => el.classList.remove('hover'));
+            // console.log("Match mouseleave: ");
+
         });
     }
 }
