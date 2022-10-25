@@ -91,8 +91,9 @@ export function createRoundsContainer(): HTMLElement {
  * @param title Title of the round.
  * @param onClick
  * @param percent of the round.
+ * @param start_at of the round.
  */
-export function createRoundContainer(roundId: number, title: string, percent?: string, onClick?: () => void): HTMLElement {
+export function createRoundContainer(roundId: number, title: string, percent?: string, start_at?: string, onClick?: () => void): HTMLElement {
     const h3 = document.createElement('h3');
     // h3.innerText = title;
     h3.innerHTML = `
@@ -100,6 +101,13 @@ export function createRoundContainer(roundId: number, title: string, percent?: s
     <div class="triangle_box">
         <div class="triangle"></div>
         <div class="triangle r"></div>
+    </div>
+    <div class="timer d-flex align-items-center">
+        <div style="background-color: #1e1e2d; color: #5e5e7d; padding-left: 10px">
+            <i class="fa-solid fa-clock"></i>
+            <span style="padding: 0 6px">--</span>
+        </div>
+        <div class="triangle" style="border-color: #1e1e2d transparent; border-width: 0 20px 20px 0;"></div>
     </div>
     <div class="progress">${percent ?? '--'}</div>
     `;
