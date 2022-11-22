@@ -4,6 +4,8 @@ import { splitBy, getRanking, findRoot, completeWithBlankMatches } from './helpe
 import * as dom from './dom';
 import * as lang from './lang';
 import { Locale } from './lang';
+// @ts-ignore
+import ScrollBooster from 'scrollbooster';
 import {
     Config,
     Connection,
@@ -72,8 +74,11 @@ export class BracketsViewer {
             separatedChildCountLabel: config?.separatedChildCountLabel !== undefined ? config.separatedChildCountLabel : false,
             showSlotsOrigin: config?.showSlotsOrigin !== undefined ? config.showSlotsOrigin : true,
             showTitle: config?.showTitle !== undefined ? config.showTitle : true,
+            showTools: config?.showTools !== undefined ? config.showTools : true,
             showLowerBracketSlotsOrigin: config?.showLowerBracketSlotsOrigin !== undefined ? config.showLowerBracketSlotsOrigin : true,
             highlightParticipantOnHover: config?.highlightParticipantOnHover !== undefined ? config.highlightParticipantOnHover : true,
+            width: config?.width,
+            height: config?.height,
         };
 
         if (this.config.onMatchClick)
@@ -94,8 +99,22 @@ export class BracketsViewer {
         }));
 
         findRoot(config?.selector).append(root);
+    
+        new ScrollBooster({
+            viewport: document.querySelector(`${config?.selector}`),
+            scrollMode: 'native',
+            emulateScroll: false,
+        });
     }
-
+    
+    /**
+     * Update tools on panel.
+     *
+     */
+    public updateTools(): void{
+        console.log(123);
+    }
+    
     /**
      * Updates the results of an existing match.
      *
@@ -128,6 +147,7 @@ export class BracketsViewer {
         if (!roundContainer) throw Error('Round not found.');
 
         const title = roundContainer.querySelector('h3');
+        // @ts-ignore
         if (title && round.title) title.innerHTML = round.title;
 
         // matchContainer.setAttribute('data-match-status', match.status.toString());
@@ -230,9 +250,13 @@ export class BracketsViewer {
      * @param matchesByGroup A list of matches for each group.
      */
     private renderElimination(root: DocumentFragment, stage: Stage, matchesByGroup: Match[][]): void {
-        const container = dom.createEliminationContainer(stage.id);
+        const container = dom.createEliminationContainer(stage.id, this.config.width, this.config.height);
+        
         if (this.config.showTitle)
             container.append(dom.createTitle(stage.name));
+        
+        if (this.config.showTools)
+            container.append(dom.createTools());
 
         if (stage.type === 'single_elimination')
             this.renderSingleElimination(container, matchesByGroup);
@@ -299,9 +323,10 @@ export class BracketsViewer {
             const roundNumber = roundIndex + 1;
             const round = this.rounds.find(round => round.id === roundId) ??
                 { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: '', complete_percent: '--' };
+            // @ts-ignore
             const title = round.title ?? roundName(roundNumber, roundCount);
             // @ts-ignore
-            const roundContainer = dom.createRoundContainer(roundId, title, round?.complete_percent, round.start_at, () => this._onRoundClick(round));
+            const roundContainer = dom.createRoundContainer(roundId, title, round?.complete_percent, round.played_at, () => this._onRoundClick(round));
 
             const roundMatches = fromToornament && roundNumber === 1 ? completedMatches : matchesByRound[roundIndex];
 
@@ -337,9 +362,10 @@ export class BracketsViewer {
             const roundId = finalMatches[roundIndex].round_id;
             const round = this.rounds.find(round => round.id === roundId) ??
                 { id: roundId, stage_id: 1, group_id: 1, number: roundNumber, title: '' };
+            // @ts-ignore
             const title = round.title ?? lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
             // @ts-ignore
-            const roundContainer = dom.createRoundContainer(roundId, title, round?.complete_percent, round.start_at, () => this._onRoundClick(round));
+            const roundContainer = dom.createRoundContainer(roundId, title, round?.complete_percent, round.played_at, () => this._onRoundClick(round));
             roundContainer.append(this.createFinalMatch(finalType, finalMatches, roundNumber, roundCount));
             upperBracket.append(roundContainer);
         }
@@ -469,7 +495,9 @@ export class BracketsViewer {
         this.renderMatchLabel(opponents, match, label);
         opponents.append(participant1, participant2);
         
+        // @ts-ignore
         if(match.ext && match.ext.length > 0) {
+            // @ts-ignore
             const statusBox = createMatchStatus(match.ext);
             opponents.appendChild(statusBox);
         }
@@ -497,6 +525,7 @@ export class BracketsViewer {
         const p = this.participants.find(p => p.id === participant?.id);
     
         const containers: ParticipantContainers = {
+            // @ts-ignore
             participant: dom.createParticipantContainer(participant && participant.id, p?.seeder),
             name: dom.createNameContainer(),
             result: dom.createResultContainer(),
@@ -532,7 +561,11 @@ export class BracketsViewer {
             containers.name.innerHTML = found.name;
             
             containers.participant.setAttribute('title', found.name);
-            if(found.img) dom.addParticipantImage(containers.name, found.img);
+            // @ts-ignore
+            if(found.img) {
+                // @ts-ignore
+                dom.addParticipantImage(containers.name, found.img);
+            }
             this.renderParticipantOrigin(containers.participant, participant, side, matchLocation);
         } else
             this.renderHint(containers.name, participant, originHint, matchLocation);

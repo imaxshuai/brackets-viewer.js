@@ -60,6 +60,8 @@ export interface Config {
      * An optional selector to select the root element.
      */
     selector?: string,
+    width?: number,
+    height?: number,
 
     /**
      * Where the position of a participant is placed relative to its name.
@@ -85,6 +87,11 @@ export interface Config {
      * Whether to show the origin of a slot (wherever possible).
      */
     showTitle?: boolean,
+    
+    /**
+     * Whether to show the origin of a slot (wherever possible).
+     */
+    showTools?: boolean,
 
     /**
      * Whether to show the origin of a slot (in the lower bracket of an elimination stage).

@@ -15,6 +15,23 @@ export function createTitle(title: string): HTMLElement {
 }
 
 /**
+ * Creates the tools of the viewer.
+ *
+ * @param title The title to set.
+ */
+export function createTools(): HTMLElement {
+    const box = document.createElement('div');
+    box.classList.add('tools');
+    box.innerHTML = `
+    <div class="actions d-flex">
+        <div class="btn"><i class="fa-solid fa-image"></i></div>
+        <div class="btn"><i class="fa-solid fa-video"></i></div>
+    </div>
+    `;
+    return box;
+}
+
+/**
  * Creates a container which contains a round-robin stage.
  *
  * @param stageId ID of the stage.
@@ -30,11 +47,18 @@ export function createRoundRobinContainer(stageId: number): HTMLElement {
  * Creates a container which contains an elimination stage.
  *
  * @param stageId ID of the stage.
+ * @param width
+ * @param height
  */
-export function createEliminationContainer(stageId: number): HTMLElement {
+export function createEliminationContainer(stageId: number, width?: number, height?: number): HTMLElement {
+    const box = document.createElement('div');
+    box.style.setProperty('position', 'relative');
     const stage = document.createElement('div');
     stage.classList.add('elimination');
     stage.setAttribute('data-stage-id', stageId.toString());
+    if (width) stage.style.setProperty('height', width + 'px');
+    if (height) stage.style.setProperty('height', height + 'px');
+    box.appendChild(stage);
     return stage;
 }
 
@@ -91,9 +115,9 @@ export function createRoundsContainer(): HTMLElement {
  * @param title Title of the round.
  * @param onClick
  * @param percent of the round.
- * @param start_at of the round.
+ * @param played_at of the round.
  */
-export function createRoundContainer(roundId: number, title: string, percent?: string, start_at?: string, onClick?: () => void): HTMLElement {
+export function createRoundContainer(roundId: number, title: string, percent?: string, played_at?: string, onClick?: () => void): HTMLElement {
     const h3 = document.createElement('h3');
     // h3.innerText = title;
     h3.innerHTML = `
@@ -105,7 +129,7 @@ export function createRoundContainer(roundId: number, title: string, percent?: s
     <div class="timer d-flex align-items-center">
         <div style="background-color: #1e1e2d; color: #5e5e7d; padding-left: 10px">
             <i class="fa-solid fa-clock"></i>
-            <span style="padding: 0 6px">--</span>
+            <span style="padding: 0 6px">${played_at ?? '--'}</span>
         </div>
         <div class="triangle" style="border-color: #1e1e2d transparent; border-width: 0 20px 20px 0;"></div>
     </div>
@@ -136,6 +160,7 @@ export function createMatchContainer(matchId?: number, status?: number): HTMLEle
 
 /**
  *
+ * @param ext
  */
 export function createMatchStatus(ext: Array<any>): HTMLElement {
     console.log(ext);

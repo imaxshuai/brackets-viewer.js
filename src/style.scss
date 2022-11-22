@@ -87,6 +87,7 @@
   overflow: auto;
   user-select: none;
   margin: 0 auto;
+  position: relative;
 
   *,
   ::after,
@@ -169,6 +170,29 @@
       border-radius: 0 !important;
     }
 
+  }
+
+  .tools {
+    height: 40px;
+    background-color: var(--secondary-background);
+    box-shadow: 2px 2px 8px 5px var(--primary-background);
+    border-radius: 5px;
+    padding: 0 20px;
+    display: inline-block;
+    position: fixed;
+    right: 50px;
+    top: 50px;
+    z-index: 99;
+    .actions {
+      height: 40px;
+      align-items: center;
+
+      .btn {
+        padding: 10px;
+        cursor: pointer;
+      }
+
+    }
   }
 
   .round {

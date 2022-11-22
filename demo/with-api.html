@@ -16,7 +16,7 @@
 
 <body style="background: #151521;">
     <!-- This div will be used as the root for the library. It must be **perfectly** empty to prevent a FOUC. -->
-    <div id="example" class="brackets-viewer" style="background-color: #151521; width: 1500px; height: 1000px"></div>
+    <div id="example" class="brackets-viewer" style="background-color: #151521;"></div>
 
     <script src="assets/js/all.js"></script>
     <script>
@@ -152,7 +152,9 @@
                         "number": 1,
                         "stage_id": 0,
                         "group_id": 0,
-                        "complete_percent": "50%"
+                        "complete_percent": "20%",
+                        "scheduled_at": "Aug 23",
+                        "played_at": "Aug 23",
                     },
                     {
                         "id": 1,
@@ -236,7 +238,7 @@
                                 'text': 'FINISHED',
                                 'style': {
                                     'bgColor': '#1e1e2d',
-                                    'color': '#fff',
+                                    'color': '#5e5e7d',
                                 }
                             },
                             {
@@ -784,6 +786,7 @@
                 // matchGames: data.match_game,
                 participants: data.participant,
                 rounds: data.round,
+                showTools: data.showTools,
             }, {
                 selector: '#example',
                 showTitle: false,
@@ -792,6 +795,8 @@
                 showSlotsOrigin: true,
                 showLowerBracketSlotsOrigin: true,
                 highlightParticipantOnHover: true,
+                width: 800,
+                height: 800,
             }).then(
                 () => console.log('Render finished')
             );
