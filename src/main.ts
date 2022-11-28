@@ -6,6 +6,7 @@ import * as lang from './lang';
 import { Locale } from './lang';
 // @ts-ignore
 import ScrollBooster from 'scrollbooster';
+import html2canvas from 'html2canvas'
 import {
     Config,
     Connection,
@@ -113,6 +114,21 @@ export class BracketsViewer {
      */
     public updateTools(): void{
         console.log(123);
+    }
+    
+    /**
+     * Screenshot.
+     */
+    public screenshot(): void {
+        html2canvas(document.querySelector('.bracket')!).then(canvas => {
+            const imgUrl = canvas.toDataURL('image/jpeg');
+            const image = document.createElement('img');
+            image.src = imgUrl;
+            const a = document.createElement('a');
+            a.href = imgUrl;
+            a.download = 'study_download';
+            a.click();
+        });
     }
     
     /**
@@ -256,7 +272,7 @@ export class BracketsViewer {
             container.append(dom.createTitle(stage.name));
         
         if (this.config.showTools)
-            container.append(dom.createTools());
+            container.append(dom.createTools(this.screenshot));
 
         if (stage.type === 'single_elimination')
             this.renderSingleElimination(container, matchesByGroup);

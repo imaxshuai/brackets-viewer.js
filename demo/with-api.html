@@ -18,9 +18,14 @@
     <!-- This div will be used as the root for the library. It must be **perfectly** empty to prevent a FOUC. -->
     <div id="example" class="brackets-viewer" style="background-color: #151521;"></div>
 
+    <div class="content"></div>
+
     <script src="assets/js/all.js"></script>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/html2canvas.js"></script>
     <script>
         (async function () {
+
             const data = {
                 "participant": [
                     {

@@ -17,17 +17,24 @@ export function createTitle(title: string): HTMLElement {
 /**
  * Creates the tools of the viewer.
  *
- * @param title The title to set.
  */
-export function createTools(): HTMLElement {
+export function createTools(screenshot?: () => void): HTMLElement {
     const box = document.createElement('div');
-    box.classList.add('tools');
-    box.innerHTML = `
-    <div class="actions d-flex">
-        <div class="btn"><i class="fa-solid fa-image"></i></div>
-        <div class="btn"><i class="fa-solid fa-video"></i></div>
-    </div>
+    box.classList.add("tools");
+    
+    const toolsBox = document.createElement('div');
+    toolsBox.classList.add("actions");
+    toolsBox.classList.add("d-flex");
+    
+    const screenshotBox = document.createElement('div');
+    screenshotBox.innerHTML = `
+        <div class="btn screenshot"><i class="fa-solid fa-image"></i></div>
     `;
+    screenshot && screenshotBox.addEventListener('click', screenshot);
+    
+    toolsBox.append(screenshotBox);
+    box.append(toolsBox);
+    
     return box;
 }
 

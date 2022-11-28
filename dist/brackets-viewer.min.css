@@ -3,6 +3,7 @@
   \*******************************************************************************************************************************************************************************/
 .brackets-viewer {
   /* Colors */
+  --body-background: #151521;
   --primary-background: #1e1e2d;
   --secondary-background: #2B2B40;
   --thirdly-background: #1e1e2d;
@@ -219,10 +220,12 @@
   font-weight: 500;
 }
 .brackets-viewer .round-robin .round {
-  width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
   margin: 0 auto;
+}
+.brackets-viewer .bracket {
+  background: var(--body-background);
 }
 .brackets-viewer .bracket h2 {
   font-size: 1.5em;

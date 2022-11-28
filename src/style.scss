@@ -1,6 +1,7 @@
 // Default integrated theme.
 .brackets-viewer {
   /* Colors */
+  --body-background: #151521;
   --primary-background: #1e1e2d;
   --secondary-background: #2B2B40;
   --thirdly-background: #1e1e2d;
@@ -264,6 +265,8 @@
   }
 
   .bracket {
+    background: var(--body-background);
+
     h2 {
       font-size: 1.5em;
       color: gray;
