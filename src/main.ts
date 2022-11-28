@@ -126,7 +126,7 @@ export class BracketsViewer {
             image.src = imgUrl;
             const a = document.createElement('a');
             a.href = imgUrl;
-            a.download = 'study_download';
+            a.download = 'match';
             a.click();
         });
     }
